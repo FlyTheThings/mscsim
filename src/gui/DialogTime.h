@@ -29,7 +29,7 @@
 
 #include <hid/hid_Manager.h>
 
-#include <Defines.h>
+#include <defs.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -53,7 +53,7 @@ public:
 
     explicit DialogTime( QWidget *parent = NULLPTR );
 
-    ~DialogTime();
+    virtual ~DialogTime();
 
     void init( double lon_deg, const QTime &time_utc );
 

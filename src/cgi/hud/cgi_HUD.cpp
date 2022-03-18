@@ -22,6 +22,7 @@
 
 #include <cgi/hud/cgi_HUD.h>
 
+#include <iomanip>
 #include <sstream>
 
 #include <osg/Drawable>
@@ -45,14 +46,14 @@ using namespace cgi;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-const float HUD::_charSize  = 5.0f;
-const float HUD::_angleCoef = CGI_HUD_Y / CGI_FOV_Y;
-const float HUD::_rollLimit = osg::DegreesToRadians( 75.0 );
+const double HUD::_charSize  = 5.0;
+const double HUD::_angleCoef = CGI_HUD_Y / CGI_FOV_Y;
+const double HUD::_rollLimit = osg::DegreesToRadians( 75.0 );
 
 ////////////////////////////////////////////////////////////////////////////////
 
 HUD::HUD() :
-    _color( Colors::_hud, 1.0f )
+    _color( Colors::_hud, 1.0 )
 {
     _root = new osg::Group();
 
@@ -95,7 +96,7 @@ HUD::HUD() :
 
     // lines
     osg::ref_ptr<osg::LineWidth> lineWidth = new osg::LineWidth();
-    lineWidth->setWidth( 2.0f );
+    lineWidth->setWidth( 2.0 );
 
     stateSet->setAttributeAndModes( lineWidth, osg::StateAttribute::ON );
 
@@ -119,23 +120,23 @@ void HUD::update()
 
         _validFPM = true;
 
-        if ( fabs( _sideslipAngleFPM_deg ) > 8.0f )
+        if ( fabs( _sideslipAngleFPM_deg ) > 8.0 )
         {
             _validFPM = false;
-            _sideslipAngleFPM_deg = ( _sideslipAngleFPM_deg < 0.0f ) ? -8.0f : 8.0f;
+            _sideslipAngleFPM_deg = ( _sideslipAngleFPM_deg < 0.0 ) ? -8.0 : 8.0;
         }
 
-        if ( _angleOfAttackFPM_deg > 10.0f || _angleOfAttackFPM_deg < -10.0f )
+        if ( _angleOfAttackFPM_deg > 10.0 || _angleOfAttackFPM_deg < -10.0 )
         {
             _validFPM = false;
-            _angleOfAttackFPM_deg = ( _angleOfAttackFPM_deg < 0.0f ) ? -10.0f : 10.0f;
+            _angleOfAttackFPM_deg = ( _angleOfAttackFPM_deg < 0.0 ) ? -10.0 : 10.0;
         }
 
         if ( Data::get()->cgi.hud.airspeed < 0.5f )
         {
             _validFPM = false;
             _angleOfAttackFPM_deg = osg::RadiansToDegrees( Data::get()->cgi.hud.pitch );
-            _sideslipAngleFPM_deg = 0.0f;
+            _sideslipAngleFPM_deg = 0.0;
         }
 
         updateRollIndicator();
@@ -167,7 +168,7 @@ void HUD::update()
 
             _material->setAmbient( osg::Material::FRONT, _color );
             _material->setDiffuse( osg::Material::FRONT, _color );
-            //_material->setTransparency( osg::Material::FRONT_AND_BACK, 1.0f - Data::get()->hud.opacity );
+            //_material->setTransparency( osg::Material::FRONT_AND_BACK, 1.0 - Data::get()->hud.opacity );
         }
     }
     else
@@ -180,10 +181,10 @@ void HUD::update()
 
 void HUD::createWaterLine()
 {
-    const float w = 20.0f;
-    const float h =  3.0f;
+    const double w = 20.0;
+    const double h =  3.0;
 
-    const float d = w / 6.0f;
+    const double d = w / 6.0;
 
     osg::ref_ptr<osg::Geode> geode = new osg::Geode();
     _switch->addChild( geode.get() );
@@ -192,13 +193,13 @@ void HUD::createWaterLine()
 
     osg::ref_ptr<osg::Vec3Array> v = new osg::Vec3Array();
 
-    v->push_back( osg::Vec3( -d * 3.0f,  0.0f, -1.0f ) );
-    v->push_back( osg::Vec3( -d * 2.0f,  0.0f, -1.0f ) );
-    v->push_back( osg::Vec3( -d * 1.0f,    -h, -1.0f ) );
-    v->push_back( osg::Vec3(      0.0f,  0.0f, -1.0f ) );
-    v->push_back( osg::Vec3(  d * 1.0f,    -h, -1.0f ) );
-    v->push_back( osg::Vec3(  d * 2.0f,  0.0f, -1.0f ) );
-    v->push_back( osg::Vec3(  d * 3.0f,  0.0f, -1.0f ) );
+    v->push_back( osg::Vec3( -d * 3.0,  0.0, -1.0 ) );
+    v->push_back( osg::Vec3( -d * 2.0,  0.0, -1.0 ) );
+    v->push_back( osg::Vec3( -d * 1.0,   -h, -1.0 ) );
+    v->push_back( osg::Vec3(      0.0,  0.0, -1.0 ) );
+    v->push_back( osg::Vec3(  d * 1.0,   -h, -1.0 ) );
+    v->push_back( osg::Vec3(  d * 2.0,  0.0, -1.0 ) );
+    v->push_back( osg::Vec3(  d * 3.0,  0.0, -1.0 ) );
 
     geometry->setVertexArray( v.get() );
     geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::LINE_STRIP, 0, v->size() ) );
@@ -210,14 +211,14 @@ void HUD::createWaterLine()
 
 void HUD::createRollIndicator()
 {
-    const float r0 = 80.0f;
-    const float r1 = r0 + 2.5f;
-    const float r2 = r0 + 5.0f;
+    const double r0 = 80.0;
+    const double r1 = r0 + 2.5;
+    const double r2 = r0 + 5.0;
 
     osg::ref_ptr<osg::PositionAttitudeTransform> patTemp = new osg::PositionAttitudeTransform();
     _switch->addChild( patTemp.get() );
 
-    patTemp->setPosition( osg::Vec3( 0.0f, 0.0f, 0.0f ) );
+    patTemp->setPosition( osg::Vec3( 0.0, 0.0, 0.0 ) );
 
     _switchRollIndicator = new osg::Switch();
     patTemp->addChild( _switchRollIndicator.get() );
@@ -231,18 +232,18 @@ void HUD::createRollIndicator()
 
         osg::ref_ptr<osg::Vec3Array> v = new osg::Vec3Array();
 
-        float a = 0.0;
+        double a = 0.0;
 
-        float x0 = 0.0f;
-        float x1 = 0.0f;
-        float x2 = 0.0f;
+        double x0 = 0.0;
+        double x1 = 0.0;
+        double x2 = 0.0;
 
-        float y0 = 0.0f;
-        float y1 = 0.0f;
-        float y2 = 0.0f;
+        double y0 = 0.0;
+        double y1 = 0.0;
+        double y2 = 0.0;
 
         // -60
-        a = osg::DegreesToRadians( -60.0f );
+        a = osg::DegreesToRadians( -60.0 );
 
         x0 = r0 * sin( a );
         x1 = r1 * sin( a );
@@ -250,14 +251,14 @@ void HUD::createRollIndicator()
         y0 = r0 * cos( a );
         y1 = r1 * cos( a );
 
-        v->push_back( osg::Vec3( -x0, y0, -1.0f ) );
-        v->push_back( osg::Vec3( -x1, y1, -1.0f ) );
+        v->push_back( osg::Vec3( -x0, y0, -1.0 ) );
+        v->push_back( osg::Vec3( -x1, y1, -1.0 ) );
 
-        v->push_back( osg::Vec3(  x0, y0, -1.0f ) );
-        v->push_back( osg::Vec3(  x1, y1, -1.0f ) );
+        v->push_back( osg::Vec3(  x0, y0, -1.0 ) );
+        v->push_back( osg::Vec3(  x1, y1, -1.0 ) );
 
         // -45
-        a = osg::DegreesToRadians( -45.0f );
+        a = osg::DegreesToRadians( -45.0 );
 
         x0 = r0 * sin( a );
         x1 = r1 * sin( a );
@@ -265,14 +266,14 @@ void HUD::createRollIndicator()
         y0 = r0 * cos( a );
         y1 = r1 * cos( a );
 
-        v->push_back( osg::Vec3( -x0, y0, -1.0f ) );
-        v->push_back( osg::Vec3( -x1, y1, -1.0f ) );
+        v->push_back( osg::Vec3( -x0, y0, -1.0 ) );
+        v->push_back( osg::Vec3( -x1, y1, -1.0 ) );
 
-        v->push_back( osg::Vec3(  x0, y0, -1.0f ) );
-        v->push_back( osg::Vec3(  x1, y1, -1.0f ) );
+        v->push_back( osg::Vec3(  x0, y0, -1.0 ) );
+        v->push_back( osg::Vec3(  x1, y1, -1.0 ) );
 
         // -30
-        a = osg::DegreesToRadians( -30.0f );
+        a = osg::DegreesToRadians( -30.0 );
 
         x0 = r0 * sin( a );
         x2 = r2 * sin( a );
@@ -280,14 +281,14 @@ void HUD::createRollIndicator()
         y0 = r0 * cos( a );
         y2 = r2 * cos( a );
 
-        v->push_back( osg::Vec3( -x0, y0, -1.0f ) );
-        v->push_back( osg::Vec3( -x2, y2, -1.0f ) );
+        v->push_back( osg::Vec3( -x0, y0, -1.0 ) );
+        v->push_back( osg::Vec3( -x2, y2, -1.0 ) );
 
-        v->push_back( osg::Vec3(  x0, y0, -1.0f ) );
-        v->push_back( osg::Vec3(  x2, y2, -1.0f ) );
+        v->push_back( osg::Vec3(  x0, y0, -1.0 ) );
+        v->push_back( osg::Vec3(  x2, y2, -1.0 ) );
 
         // -20
-        a = osg::DegreesToRadians( -20.0f );
+        a = osg::DegreesToRadians( -20.0 );
 
         x0 = r0 * sin( a );
         x1 = r1 * sin( a );
@@ -295,14 +296,14 @@ void HUD::createRollIndicator()
         y0 = r0 * cos( a );
         y1 = r1 * cos( a );
 
-        v->push_back( osg::Vec3( -x0, y0, -1.0f ) );
-        v->push_back( osg::Vec3( -x1, y1, -1.0f ) );
+        v->push_back( osg::Vec3( -x0, y0, -1.0 ) );
+        v->push_back( osg::Vec3( -x1, y1, -1.0 ) );
 
-        v->push_back( osg::Vec3(  x0, y0, -1.0f ) );
-        v->push_back( osg::Vec3(  x1, y1, -1.0f ) );
+        v->push_back( osg::Vec3(  x0, y0, -1.0 ) );
+        v->push_back( osg::Vec3(  x1, y1, -1.0 ) );
 
         // -10
-        a = osg::DegreesToRadians( -10.0f );
+        a = osg::DegreesToRadians( -10.0 );
 
         x0 = r0 * sin( a );
         x1 = r1 * sin( a );
@@ -310,19 +311,19 @@ void HUD::createRollIndicator()
         y0 = r0 * cos( a );
         y1 = r1 * cos( a );
 
-        v->push_back( osg::Vec3( -x0, y0, -1.0f ) );
-        v->push_back( osg::Vec3( -x1, y1, -1.0f ) );
+        v->push_back( osg::Vec3( -x0, y0, -1.0 ) );
+        v->push_back( osg::Vec3( -x1, y1, -1.0 ) );
 
-        v->push_back( osg::Vec3(  x0, y0, -1.0f ) );
-        v->push_back( osg::Vec3(  x1, y1, -1.0f ) );
+        v->push_back( osg::Vec3(  x0, y0, -1.0 ) );
+        v->push_back( osg::Vec3(  x1, y1, -1.0 ) );
 
         // 0
-        v->push_back( osg::Vec3(  0.0f, r0, -1.0f ) );
-        v->push_back( osg::Vec3( -2.0f, r0 + 5.0f, -1.0f ) );
-        v->push_back( osg::Vec3( -2.0f, r0 + 5.0f, -1.0f ) );
-        v->push_back( osg::Vec3(  2.0f, r0 + 5.0f, -1.0f ) );
-        v->push_back( osg::Vec3(  2.0f, r0 + 5.0f, -1.0f ) );
-        v->push_back( osg::Vec3(  0.0f, r0, -1.0f ) );
+        v->push_back( osg::Vec3(  0.0 , r0       , -1.0 ) );
+        v->push_back( osg::Vec3( -2.0 , r0 + 5.0 , -1.0 ) );
+        v->push_back( osg::Vec3( -2.0 , r0 + 5.0 , -1.0 ) );
+        v->push_back( osg::Vec3(  2.0 , r0 + 5.0 , -1.0 ) );
+        v->push_back( osg::Vec3(  2.0 , r0 + 5.0 , -1.0 ) );
+        v->push_back( osg::Vec3(  0.0 , r0       , -1.0 ) );
 
         geometry->setVertexArray( v.get() );
         geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::LINES, 0, v->size() ) );
@@ -342,9 +343,9 @@ void HUD::createRollIndicator()
 
         osg::ref_ptr<osg::Vec3Array> v = new osg::Vec3Array();
 
-        v->push_back( osg::Vec3(  0.0f, r0, -1.0f ) );
-        v->push_back( osg::Vec3( -2.0f, r0 - 5.0f, -1.0f ) );
-        v->push_back( osg::Vec3(  2.0f, r0 - 5.0f, -1.0f ) );
+        v->push_back( osg::Vec3(  0.0 , r0       , -1.0 ) );
+        v->push_back( osg::Vec3( -2.0 , r0 - 5.0 , -1.0 ) );
+        v->push_back( osg::Vec3(  2.0 , r0 - 5.0 , -1.0 ) );
 
         geometry->setVertexArray( v.get() );
         geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::LINE_LOOP, 0, v->size() ) );
@@ -376,14 +377,14 @@ void HUD::createPitchLadder()
             osg::ref_ptr<osg::Geode> geode = new osg::Geode();
             _switchPitchLadder->addChild( geode.get() );
 
-            createPitchLadderBar( geode.get(), ((float)i)*_angleCoef, i );
+            createPitchLadderBar( geode.get(), ((double)i)*_angleCoef, i );
         }
     }
 
     // Hozrizon Line
     {
-        const float w = 120.0f;
-        const float g =  20.0f;
+        const double w = 120.0;
+        const double g =  20.0;
 
         osg::ref_ptr<osg::Geode> geode = new osg::Geode();
         _switchPitchLadder->addChild( geode.get() );
@@ -392,11 +393,11 @@ void HUD::createPitchLadder()
 
         osg::ref_ptr<osg::Vec3Array> v = new osg::Vec3Array();
 
-        v->push_back( osg::Vec3( -w / 2.0f, 0.0f, -1.0f ) );
-        v->push_back( osg::Vec3( -g / 2.0f, 0.0f, -1.0f ) );
+        v->push_back( osg::Vec3( -w / 2.0, 0.0, -1.0 ) );
+        v->push_back( osg::Vec3( -g / 2.0, 0.0, -1.0 ) );
 
-        v->push_back( osg::Vec3(  w / 2.0f, 0.0f, -1.0f ) );
-        v->push_back( osg::Vec3(  g / 2.0f, 0.0f, -1.0f ) );
+        v->push_back( osg::Vec3(  w / 2.0, 0.0, -1.0 ) );
+        v->push_back( osg::Vec3(  g / 2.0, 0.0, -1.0 ) );
 
         geometry->setVertexArray( v.get() );
         geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::LINES, 0, v->size() ) );
@@ -411,7 +412,7 @@ void HUD::createPitchLadder()
             osg::ref_ptr<osg::Geode> geode = new osg::Geode();
             _switchPitchLadder->addChild( geode.get() );
 
-            createPitchLadderBar( geode.get(), ((float)i)*_angleCoef, i );
+            createPitchLadderBar( geode.get(), ((double)i)*_angleCoef, i );
         }
     }
 }
@@ -420,14 +421,14 @@ void HUD::createPitchLadder()
 
 void HUD::createHeadingScale()
 {
-    const float y_del = -80.0f;
+    const double y_del = -80.0;
 
-    const float scale_w = 100.0f;
+    const double scale_w = 100.0;
 
-    const float box_w = 12.0f;
-    const float box_h =  7.5f;
+    const double box_w = 12.0;
+    const double box_h =  7.5;
 
-    const float px_deg = scale_w / 50.0;
+    const double px_deg = scale_w / 50.0;
 
     _patHeadingScale = new osg::PositionAttitudeTransform();
     _switch->addChild( _patHeadingScale.get() );
@@ -445,15 +446,15 @@ void HUD::createHeadingScale()
         osg::ref_ptr<osg::Vec3Array> v = new osg::Vec3Array();
 
         // marker
-        v->push_back( osg::Vec3( -box_w / 6.0f, y_del + box_h * 0.5f, -1.0f ) );
-        v->push_back( osg::Vec3(          0.0f, y_del               , -1.0f ) );
-        v->push_back( osg::Vec3(  box_w / 6.0f, y_del + box_h * 0.5f, -1.0f ) );
+        v->push_back( osg::Vec3( -box_w / 6.0 , y_del + box_h * 0.5 , -1.0 ) );
+        v->push_back( osg::Vec3(          0.0 , y_del               , -1.0 ) );
+        v->push_back( osg::Vec3(  box_w / 6.0 , y_del + box_h * 0.5 , -1.0 ) );
 
         // box
-        v->push_back( osg::Vec3(  box_w / 2.0f, y_del + box_h * 0.5f, -1.0f ) );
-        v->push_back( osg::Vec3(  box_w / 2.0f, y_del + box_h * 1.5f, -1.0f ) );
-        v->push_back( osg::Vec3( -box_w / 2.0f, y_del + box_h * 1.5f, -1.0f ) );
-        v->push_back( osg::Vec3( -box_w / 2.0f, y_del + box_h * 0.5f, -1.0f ) );
+        v->push_back( osg::Vec3(  box_w / 2.0 , y_del + box_h * 0.5 , -1.0 ) );
+        v->push_back( osg::Vec3(  box_w / 2.0 , y_del + box_h * 1.5 , -1.0 ) );
+        v->push_back( osg::Vec3( -box_w / 2.0 , y_del + box_h * 1.5 , -1.0 ) );
+        v->push_back( osg::Vec3( -box_w / 2.0 , y_del + box_h * 0.5 , -1.0 ) );
 
         geometry->setVertexArray( v.get() );
         geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::LINE_LOOP, 0, v->size() ) );
@@ -472,7 +473,7 @@ void HUD::createHeadingScale()
         text->setColor( _color );
         text->setCharacterSize( _charSize );
         text->setAxisAlignment( osgText::TextBase::XY_PLANE );
-        text->setPosition( osg::Vec3( 0.0f, y_del + box_h * 0.5f + 1.5f, -1.0f ) );
+        text->setPosition( osg::Vec3( 0.0, y_del + box_h * 0.5 + 1.5, -1.0 ) );
         text->setLayout( osgText::Text::LEFT_TO_RIGHT );
         text->setAlignment( osgText::Text::CENTER_BASE_LINE );
         text->setText( "360" );
@@ -489,8 +490,8 @@ void HUD::createHeadingScale()
         osg::ref_ptr<osg::Vec3Array> v = new osg::Vec3Array();
 
         // marker
-        v->push_back( osg::Vec3( -scale_w / 2.0f, y_del, -1.0f ) );
-        v->push_back( osg::Vec3(  scale_w / 2.0f, y_del, -1.0f ) );
+        v->push_back( osg::Vec3( -scale_w / 2.0, y_del, -1.0 ) );
+        v->push_back( osg::Vec3(  scale_w / 2.0, y_del, -1.0 ) );
 
         geometry->setVertexArray( v.get() );
         geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::LINES, 0, v->size() ) );
@@ -508,11 +509,11 @@ void HUD::createHeadingScale()
                 {
                     int deg10 = ( i < 0 ) ? ( 360 + i ) / 10 : i / 10;
 
-                    createHeadingScaleBar( geode.get(), y_del, ((float)i)*px_deg, deg10 );
+                    createHeadingScaleBar( geode.get(), y_del, ((double)i)*px_deg, deg10 );
                 }
                 else
                 {
-                    createHeadingScaleBar( geode.get(), y_del, ((float)i)*px_deg );
+                    createHeadingScaleBar( geode.get(), y_del, ((double)i)*px_deg );
                 }
             }
         }
@@ -523,8 +524,8 @@ void HUD::createHeadingScale()
 
 void HUD::createFPM()
 {
-    const float r0 = 3.0f;
-    const float r1 = 6.0f;
+    const double r0 = 3.0;
+    const double r1 = 6.0;
 
     _patFPM = new osg::PositionAttitudeTransform();
     _switch->addChild( _patFPM.get() );
@@ -538,14 +539,14 @@ void HUD::createFPM()
 
         osg::ref_ptr<osg::Vec3Array> v = new osg::Vec3Array();
 
-        v->push_back( osg::Vec3( -r1, 0.0f, -1.0f ) );
-        v->push_back( osg::Vec3( -r0, 0.0f, -1.0f ) );
+        v->push_back( osg::Vec3( -r1, 0.0, -1.0 ) );
+        v->push_back( osg::Vec3( -r0, 0.0, -1.0 ) );
 
-        v->push_back( osg::Vec3(  0.0f, r1, -1.0f ) );
-        v->push_back( osg::Vec3(  0.0f, r0, -1.0f ) );
+        v->push_back( osg::Vec3(  0.0, r1, -1.0 ) );
+        v->push_back( osg::Vec3(  0.0, r0, -1.0 ) );
 
-        v->push_back( osg::Vec3(  r1, 0.0f, -1.0f ) );
-        v->push_back( osg::Vec3(  r0, 0.0f, -1.0f ) );
+        v->push_back( osg::Vec3(  r1, 0.0, -1.0 ) );
+        v->push_back( osg::Vec3(  r0, 0.0, -1.0 ) );
 
         geometry->setVertexArray( v.get() );
         geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::LINES, 0, v->size() ) );
@@ -561,12 +562,12 @@ void HUD::createFPM()
 
         for ( int i = 0; i < 360; i = i + 10 )
         {
-            float a = osg::DegreesToRadians( (float)i );
+            double a = osg::DegreesToRadians( (double)i );
 
-            float x = r0 * sin( a );
-            float y = r0 * cos( a );
+            double x = r0 * sin( a );
+            double y = r0 * cos( a );
 
-            v->push_back( osg::Vec3( x, y, -1.0f ) );
+            v->push_back( osg::Vec3( x, y, -1.0 ) );
         }
 
 
@@ -588,11 +589,11 @@ void HUD::createFPM()
 
         osg::ref_ptr<osg::Vec3Array> v = new osg::Vec3Array();
 
-        v->push_back( osg::Vec3( -r0,  r0, -1.0f ) );
-        v->push_back( osg::Vec3(  r0, -r0, -1.0f ) );
+        v->push_back( osg::Vec3( -r0,  r0, -1.0 ) );
+        v->push_back( osg::Vec3(  r0, -r0, -1.0 ) );
 
-        v->push_back( osg::Vec3(  r0,  r0, -1.0f ) );
-        v->push_back( osg::Vec3( -r0, -r0, -1.0f ) );
+        v->push_back( osg::Vec3(  r0,  r0, -1.0 ) );
+        v->push_back( osg::Vec3( -r0, -r0, -1.0 ) );
 
         geometry->setVertexArray( v.get() );
         geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::LINES, 0, v->size() ) );
@@ -605,8 +606,8 @@ void HUD::createFPM()
 
 void HUD::createILS()
 {
-    const float bar_w = 40.0f;
-    const float mrk_w =  5.0f;
+    const double bar_w = 40.0;
+    const double mrk_w =  5.0;
 
     _patILS = new osg::PositionAttitudeTransform();
     _switch->addChild( _patILS.get() );
@@ -627,28 +628,28 @@ void HUD::createILS()
         osg::ref_ptr<osg::Vec3Array> v = new osg::Vec3Array();
 
         // bar
-        v->push_back( osg::Vec3( -bar_w/2.0f, 0.0f, -1.0f ) );
-        v->push_back( osg::Vec3(  bar_w/2.0f, 0.0f, -1.0f ) );
+        v->push_back( osg::Vec3( -bar_w/2.0 , 0.0 , -1.0 ) );
+        v->push_back( osg::Vec3(  bar_w/2.0 , 0.0 , -1.0 ) );
 
         // marking full left
-        v->push_back( osg::Vec3( -bar_w/2.0f, -mrk_w/2.0f, -1.0f ) );
-        v->push_back( osg::Vec3( -bar_w/2.0f,  mrk_w/2.0f, -1.0f ) );
+        v->push_back( osg::Vec3( -bar_w/2.0 , -mrk_w/2.0 , -1.0 ) );
+        v->push_back( osg::Vec3( -bar_w/2.0 ,  mrk_w/2.0 , -1.0 ) );
 
         // marking half left
-        v->push_back( osg::Vec3( -bar_w/4.0f, -mrk_w/2.0f, -1.0f ) );
-        v->push_back( osg::Vec3( -bar_w/4.0f,  mrk_w/2.0f, -1.0f ) );
+        v->push_back( osg::Vec3( -bar_w/4.0 , -mrk_w/2.0 , -1.0 ) );
+        v->push_back( osg::Vec3( -bar_w/4.0 ,  mrk_w/2.0 , -1.0 ) );
 
         // marking center
-        v->push_back( osg::Vec3(        0.0f, -mrk_w/2.0f, -1.0f ) );
-        v->push_back( osg::Vec3(        0.0f,  mrk_w/2.0f, -1.0f ) );
+        v->push_back( osg::Vec3(        0.0 , -mrk_w/2.0 , -1.0 ) );
+        v->push_back( osg::Vec3(        0.0 ,  mrk_w/2.0 , -1.0 ) );
 
         // marking half right
-        v->push_back( osg::Vec3(  bar_w/4.0f, -mrk_w/2.0f, -1.0f ) );
-        v->push_back( osg::Vec3(  bar_w/4.0f,  mrk_w/2.0f, -1.0f ) );
+        v->push_back( osg::Vec3(  bar_w/4.0 , -mrk_w/2.0 , -1.0 ) );
+        v->push_back( osg::Vec3(  bar_w/4.0 ,  mrk_w/2.0 , -1.0 ) );
 
         // marking full right
-        v->push_back( osg::Vec3(  bar_w/2.0f, -mrk_w/2.0f, -1.0f ) );
-        v->push_back( osg::Vec3(  bar_w/2.0f,  mrk_w/2.0f, -1.0f ) );
+        v->push_back( osg::Vec3(  bar_w/2.0 , -mrk_w/2.0 , -1.0 ) );
+        v->push_back( osg::Vec3(  bar_w/2.0 ,  mrk_w/2.0 , -1.0 ) );
 
         geometry->setVertexArray( v.get() );
         geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::LINES, 0, v->size() ) );
@@ -669,28 +670,28 @@ void HUD::createILS()
         osg::ref_ptr<osg::Vec3Array> v = new osg::Vec3Array();
 
         // bar
-        v->push_back( osg::Vec3( 0.0f, -bar_w/2.0f, -1.0f ) );
-        v->push_back( osg::Vec3( 0.0f,  bar_w/2.0f, -1.0f ) );
+        v->push_back( osg::Vec3( 0.0 , -bar_w/2.0 , -1.0 ) );
+        v->push_back( osg::Vec3( 0.0 ,  bar_w/2.0 , -1.0 ) );
 
         // marking full bottom
-        v->push_back( osg::Vec3( -mrk_w/2.0f, -bar_w/2.0f, -1.0f ) );
-        v->push_back( osg::Vec3(  mrk_w/2.0f, -bar_w/2.0f, -1.0f ) );
+        v->push_back( osg::Vec3( -mrk_w/2.0 , -bar_w/2.0 , -1.0 ) );
+        v->push_back( osg::Vec3(  mrk_w/2.0 , -bar_w/2.0 , -1.0 ) );
 
         // marking half bottom
-        v->push_back( osg::Vec3( -mrk_w/2.0f, -bar_w/4.0f, -1.0f ) );
-        v->push_back( osg::Vec3(  mrk_w/2.0f, -bar_w/4.0f, -1.0f ) );
+        v->push_back( osg::Vec3( -mrk_w/2.0 , -bar_w/4.0 , -1.0 ) );
+        v->push_back( osg::Vec3(  mrk_w/2.0 , -bar_w/4.0 , -1.0 ) );
 
         // marking center
-        v->push_back( osg::Vec3( -mrk_w/2.0f,        0.0f, -1.0f ) );
-        v->push_back( osg::Vec3(  mrk_w/2.0f,        0.0f, -1.0f ) );
+        v->push_back( osg::Vec3( -mrk_w/2.0 ,        0.0 , -1.0 ) );
+        v->push_back( osg::Vec3(  mrk_w/2.0 ,        0.0 , -1.0 ) );
 
         // marking half top
-        v->push_back( osg::Vec3( -mrk_w/2.0f,  bar_w/4.0f, -1.0f ) );
-        v->push_back( osg::Vec3(  mrk_w/2.0f,  bar_w/4.0f, -1.0f ) );
+        v->push_back( osg::Vec3( -mrk_w/2.0 ,  bar_w/4.0 , -1.0 ) );
+        v->push_back( osg::Vec3(  mrk_w/2.0 ,  bar_w/4.0 , -1.0 ) );
 
         // marking full top
-        v->push_back( osg::Vec3( -mrk_w/2.0f,  bar_w/2.0f, -1.0f ) );
-        v->push_back( osg::Vec3(  mrk_w/2.0f,  bar_w/2.0f, -1.0f ) );
+        v->push_back( osg::Vec3( -mrk_w/2.0 ,  bar_w/2.0 , -1.0 ) );
+        v->push_back( osg::Vec3(  mrk_w/2.0 ,  bar_w/2.0 , -1.0 ) );
 
         geometry->setVertexArray( v.get() );
         geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::LINES, 0, v->size() ) );
@@ -715,7 +716,7 @@ void HUD::createStall()
     text->setColor( _color );
     text->setCharacterSize( 2 * _charSize );
     text->setAxisAlignment( osgText::TextBase::XY_PLANE );
-    text->setPosition( osg::Vec3( 0.0f, 20.0f, -1.0f ) );
+    text->setPosition( osg::Vec3( 0.0, 20.0, -1.0 ) );
     text->setLayout( osgText::Text::LEFT_TO_RIGHT );
     text->setAlignment( osgText::Text::CENTER_BASE_LINE );
     text->setText( "STALL" );
@@ -726,11 +727,11 @@ void HUD::createStall()
 
 void HUD::createTextL()
 {
-    const float x = 60.0f;
-    const float y =  0.0f;
+    const double x = 60.0;
+    const double y =  0.0;
 
-    const float w = 16.0f;
-    const float h =  9.0f;
+    const double w = 16.0;
+    const double h =  9.0;
 
     // Box
     {
@@ -741,10 +742,10 @@ void HUD::createTextL()
 
         osg::ref_ptr<osg::Vec3Array> v = new osg::Vec3Array();
 
-        v->push_back( osg::Vec3( -x     , y     , -1.0f ) );
-        v->push_back( osg::Vec3( -x     , y + h , -1.0f ) );
-        v->push_back( osg::Vec3( -x - w , y + h , -1.0f ) );
-        v->push_back( osg::Vec3( -x - w , y     , -1.0f ) );
+        v->push_back( osg::Vec3( -x     , y     , -1.0 ) );
+        v->push_back( osg::Vec3( -x     , y + h , -1.0 ) );
+        v->push_back( osg::Vec3( -x - w , y + h , -1.0 ) );
+        v->push_back( osg::Vec3( -x - w , y     , -1.0 ) );
 
         geometry->setVertexArray( v.get() );
         geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::LINE_LOOP, 0, v->size() ) );
@@ -765,7 +766,7 @@ void HUD::createTextL()
         text->setColor( _color );
         text->setCharacterSize( _charSize );
         text->setAxisAlignment( osgText::TextBase::XY_PLANE );
-        text->setPosition( osg::Vec3( -x - 1.0f, y + 0.5f * h, -1.0f ) );
+        text->setPosition( osg::Vec3( -x - 1.0, y + 0.5 * h, -1.0 ) );
         text->setLayout( osgText::Text::LEFT_TO_RIGHT );
         text->setAlignment( osgText::Text::RIGHT_CENTER );
         text->setText( "9999" );
@@ -783,7 +784,7 @@ void HUD::createTextL()
         text->setColor( _color );
         text->setCharacterSize( _charSize );
         text->setAxisAlignment( osgText::TextBase::XY_PLANE );
-        text->setPosition( osg::Vec3( -x - 1.0f, y - 0.7f * h, -1.0f ) );
+        text->setPosition( osg::Vec3( -x - 1.0, y - 0.7 * h, -1.0 ) );
         text->setLayout( osgText::Text::LEFT_TO_RIGHT );
         text->setAlignment( osgText::Text::RIGHT_CENTER );
         text->setText( "2.15" );
@@ -801,7 +802,7 @@ void HUD::createTextL()
         text->setColor( _color );
         text->setCharacterSize( _charSize );
         text->setAxisAlignment( osgText::TextBase::XY_PLANE );
-        text->setPosition( osg::Vec3( -x - 1.0f, y - 1.4f * h, -1.0f ) );
+        text->setPosition( osg::Vec3( -x - 1.0, y - 1.4 * h, -1.0 ) );
         text->setLayout( osgText::Text::LEFT_TO_RIGHT );
         text->setAlignment( osgText::Text::RIGHT_CENTER );
         text->setText( "1.0G" );
@@ -813,11 +814,11 @@ void HUD::createTextL()
 
 void HUD::createTextR()
 {
-    const float x = 60.0f;
-    const float y =  0.0f;
+    const double x = 60.0;
+    const double y =  0.0;
 
-    const float w = 23.0f;
-    const float h =  9.0f;
+    const double w = 23.0;
+    const double h =  9.0;
 
     // Box
     {
@@ -828,10 +829,10 @@ void HUD::createTextR()
 
         osg::ref_ptr<osg::Vec3Array> v = new osg::Vec3Array();
 
-        v->push_back( osg::Vec3( x     , y     , -1.0f ) );
-        v->push_back( osg::Vec3( x     , y + h , -1.0f ) );
-        v->push_back( osg::Vec3( x + w , y + h , -1.0f ) );
-        v->push_back( osg::Vec3( x + w , y     , -1.0f ) );
+        v->push_back( osg::Vec3( x     , y     , -1.0 ) );
+        v->push_back( osg::Vec3( x     , y + h , -1.0 ) );
+        v->push_back( osg::Vec3( x + w , y + h , -1.0 ) );
+        v->push_back( osg::Vec3( x + w , y     , -1.0 ) );
 
         geometry->setVertexArray( v.get() );
         geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::LINE_LOOP, 0, v->size() ) );
@@ -852,7 +853,7 @@ void HUD::createTextR()
         text->setColor( _color );
         text->setCharacterSize( _charSize );
         text->setAxisAlignment( osgText::TextBase::XY_PLANE );
-        text->setPosition( osg::Vec3( x + w - 1.0f, y + 0.5f * h, -1.0f ) );
+        text->setPosition( osg::Vec3( x + w - 1.0, y + 0.5 * h, -1.0 ) );
         text->setLayout( osgText::Text::LEFT_TO_RIGHT );
         text->setAlignment( osgText::Text::RIGHT_CENTER );
         text->setText( "99,999" );
@@ -870,7 +871,7 @@ void HUD::createTextR()
         text->setColor( _color );
         text->setCharacterSize( _charSize );
         text->setAxisAlignment( osgText::TextBase::XY_PLANE );
-        text->setPosition( osg::Vec3( x + w - 1.0f, y - 0.7f * h, -1.0f ) );
+        text->setPosition( osg::Vec3( x + w - 1.0, y - 0.7 * h, -1.0 ) );
         text->setLayout( osgText::Text::LEFT_TO_RIGHT );
         text->setAlignment( osgText::Text::RIGHT_CENTER );
         text->setText( "6000" );
@@ -888,7 +889,7 @@ void HUD::createTextR()
         text->setColor( _color );
         text->setCharacterSize( _charSize );
         text->setAxisAlignment( osgText::TextBase::XY_PLANE );
-        text->setPosition( osg::Vec3( x + w - 1.0f, y - 1.4f * h, -1.0f ) );
+        text->setPosition( osg::Vec3( x + w - 1.0, y - 1.4 * h, -1.0 ) );
         text->setLayout( osgText::Text::LEFT_TO_RIGHT );
         text->setAlignment( osgText::Text::RIGHT_CENTER );
         text->setText( "RA 9999" );
@@ -900,9 +901,9 @@ void HUD::createTextR()
 
 void HUD::createPitchLadderBar( osg::Geode *geode, int y, int deg )
 {
-    const float w = 60.0f; // width
-    const float h =  3.0f; // height
-    const float g = 20.0f; // gap
+    const double w = 60.0; // width
+    const double h =  3.0; // height
+    const double g = 20.0; // gap
 
     // Bar
     {
@@ -912,44 +913,44 @@ void HUD::createPitchLadderBar( osg::Geode *geode, int y, int deg )
 
         if ( deg < 0 )
         {
-            float l = w - g;
-            float d = l * 0.2f;
+            double l = w - g;
+            double d = l * 0.2;
 
             // left
-            v->push_back( osg::Vec3( -w / 2.0f    , y, -1.0f ) );
-            v->push_back( osg::Vec3( -w / 2.0f + d, y, -1.0f ) );
+            v->push_back( osg::Vec3( -w / 2.0    , y, -1.0 ) );
+            v->push_back( osg::Vec3( -w / 2.0 + d, y, -1.0 ) );
 
-            v->push_back( osg::Vec3( -g / 2.0f - d, y, -1.0f ) );
-            v->push_back( osg::Vec3( -g / 2.0f    , y, -1.0f ) );
+            v->push_back( osg::Vec3( -g / 2.0 - d, y, -1.0 ) );
+            v->push_back( osg::Vec3( -g / 2.0    , y, -1.0 ) );
 
-            v->push_back( osg::Vec3( -g / 2.0f,     y, -1.0f ) );
-            v->push_back( osg::Vec3( -g / 2.0f, y + h, -1.0f ) );
+            v->push_back( osg::Vec3( -g / 2.0,     y, -1.0 ) );
+            v->push_back( osg::Vec3( -g / 2.0, y + h, -1.0 ) );
 
             // right
-            v->push_back( osg::Vec3(  w / 2.0f    , y, -1.0f ) );
-            v->push_back( osg::Vec3(  w / 2.0f - d, y, -1.0f ) );
+            v->push_back( osg::Vec3(  w / 2.0    , y, -1.0 ) );
+            v->push_back( osg::Vec3(  w / 2.0 - d, y, -1.0 ) );
 
-            v->push_back( osg::Vec3(  g / 2.0f + d, y, -1.0f ) );
-            v->push_back( osg::Vec3(  g / 2.0f    , y, -1.0f ) );
+            v->push_back( osg::Vec3(  g / 2.0 + d, y, -1.0 ) );
+            v->push_back( osg::Vec3(  g / 2.0    , y, -1.0 ) );
 
-            v->push_back( osg::Vec3(  g / 2.0f,     y, -1.0f ) );
-            v->push_back( osg::Vec3(  g / 2.0f, y + h, -1.0f ) );
+            v->push_back( osg::Vec3(  g / 2.0,     y, -1.0 ) );
+            v->push_back( osg::Vec3(  g / 2.0, y + h, -1.0 ) );
         }
         else
         {
             // left
-            v->push_back( osg::Vec3( -w / 2.0f,     y, -1.0f ) );
-            v->push_back( osg::Vec3( -g / 2.0f,     y, -1.0f ) );
+            v->push_back( osg::Vec3( -w / 2.0 ,     y , -1.0 ) );
+            v->push_back( osg::Vec3( -g / 2.0 ,     y , -1.0 ) );
 
-            v->push_back( osg::Vec3( -g / 2.0f,     y, -1.0f ) );
-            v->push_back( osg::Vec3( -g / 2.0f, y - h, -1.0f ) );
+            v->push_back( osg::Vec3( -g / 2.0 ,     y , -1.0 ) );
+            v->push_back( osg::Vec3( -g / 2.0 , y - h , -1.0 ) );
 
             // right
-            v->push_back( osg::Vec3(  w / 2.0f,     y, -1.0f ) );
-            v->push_back( osg::Vec3(  g / 2.0f,     y, -1.0f ) );
+            v->push_back( osg::Vec3(  w / 2.0 ,     y , -1.0 ) );
+            v->push_back( osg::Vec3(  g / 2.0 ,     y , -1.0 ) );
 
-            v->push_back( osg::Vec3(  g / 2.0f,     y, -1.0f ) );
-            v->push_back( osg::Vec3(  g / 2.0f, y - h, -1.0f ) );
+            v->push_back( osg::Vec3(  g / 2.0 ,     y , -1.0 ) );
+            v->push_back( osg::Vec3(  g / 2.0 , y - h , -1.0 ) );
         }
 
         geometry->setVertexArray( v.get() );
@@ -970,7 +971,7 @@ void HUD::createPitchLadderBar( osg::Geode *geode, int y, int deg )
     deg_str << ( deg < 0 ? -deg : deg );
 
     // TEXT
-    float y_del = _charSize - 3.0;
+    double y_del = _charSize - 3.0;
 
     if ( deg < 0 )
     {
@@ -987,7 +988,7 @@ void HUD::createPitchLadderBar( osg::Geode *geode, int y, int deg )
         text->setColor( _color );
         text->setCharacterSize( _charSize );
         text->setAxisAlignment( osgText::TextBase::XY_PLANE );
-        text->setPosition( osg::Vec3( -w / 2.0f, y + y_del, -1.0f ) );
+        text->setPosition( osg::Vec3( -w / 2.0, y + y_del, -1.0 ) );
         text->setLayout( osgText::Text::LEFT_TO_RIGHT );
         text->setAlignment( osgText::Text::LEFT_BASE_LINE );
         text->setText( deg_str.str() );
@@ -1002,7 +1003,7 @@ void HUD::createPitchLadderBar( osg::Geode *geode, int y, int deg )
         text->setColor( _color );
         text->setCharacterSize( _charSize );
         text->setAxisAlignment( osgText::TextBase::XY_PLANE );
-        text->setPosition( osg::Vec3( w / 2.0f, y + y_del, -1.0f ) );
+        text->setPosition( osg::Vec3( w / 2.0, y + y_del, -1.0 ) );
         text->setLayout( osgText::Text::LEFT_TO_RIGHT );
         text->setAlignment( osgText::Text::RIGHT_BASE_LINE );
         text->setText( deg_str.str() );
@@ -1012,15 +1013,15 @@ void HUD::createPitchLadderBar( osg::Geode *geode, int y, int deg )
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void HUD::createHeadingScaleBar( osg::Geode *geode, float y_del, int x, int deg10 )
+void HUD::createHeadingScaleBar( osg::Geode *geode, double y_del, int x, int deg10 )
 {
     /////////////////////////////////////////
     createHeadingScaleBar( geode, y_del, x );
     /////////////////////////////////////////
 
-    char deg10_srt[256];
+    std::stringstream deg10_srt;
 
-    sprintf( deg10_srt, "%02d", deg10 );
+    deg10_srt << std::setfill( '0' ) << std::setw( 2 ) << deg10;
 
     osg::ref_ptr<osgText::Text> text = new osgText::Text();
     _texts.push_back( text );
@@ -1028,26 +1029,26 @@ void HUD::createHeadingScaleBar( osg::Geode *geode, float y_del, int x, int deg1
     text->setColor( _color );
     text->setCharacterSize( _charSize );
     text->setAxisAlignment( osgText::TextBase::XY_PLANE );
-    text->setPosition( osg::Vec3( x, y_del - _charSize - 3.0f, -1.0f ) );
+    text->setPosition( osg::Vec3( x, y_del - _charSize - 3.0, -1.0 ) );
     text->setLayout( osgText::Text::LEFT_TO_RIGHT );
     text->setAlignment( osgText::Text::CENTER_BASE_LINE );
-    text->setText( deg10_srt );
+    text->setText( deg10_srt.str() );
     geode->addDrawable( text );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void HUD::createHeadingScaleBar( osg::Geode *geode, float y_del, int x )
+void HUD::createHeadingScaleBar( osg::Geode *geode, double y_del, int x )
 {
-    const float h = 2.5f;
+    const double h = 2.5;
 
     osg::ref_ptr<osg::Geometry> geometry = new osg::Geometry();
 
     osg::ref_ptr<osg::Vec3Array> v = new osg::Vec3Array();
 
     // bar
-    v->push_back( osg::Vec3( x, y_del    , -1.0f ) );
-    v->push_back( osg::Vec3( x, y_del - h, -1.0f ) );
+    v->push_back( osg::Vec3( x, y_del    , -1.0 ) );
+    v->push_back( osg::Vec3( x, y_del - h, -1.0 ) );
 
     geometry->setVertexArray( v.get() );
     geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::LINES, 0, v->size() ) );
@@ -1077,8 +1078,8 @@ void HUD::updateRollIndicator()
 
 void HUD::updatePitchLadder()
 {
-    float roll_deg  = osg::RadiansToDegrees( Data::get()->cgi.hud.roll  );
-    float pitch_deg = osg::RadiansToDegrees( Data::get()->cgi.hud.pitch );
+    double roll_deg  = osg::RadiansToDegrees( Data::get()->cgi.hud.roll  );
+    double pitch_deg = osg::RadiansToDegrees( Data::get()->cgi.hud.pitch );
 
     osg::Quat q( Data::get()->cgi.hud.roll, osg::Z_AXIS );
 
@@ -1088,10 +1089,10 @@ void HUD::updatePitchLadder()
 
     _patPitchLadderPitch->setPosition( r );
 
-    float sinRoll = sin( Data::get()->cgi.hud.roll );
-    float cosRoll = cos( Data::get()->cgi.hud.roll );
+    double sinRoll = sin( Data::get()->cgi.hud.roll );
+    double cosRoll = cos( Data::get()->cgi.hud.roll );
 
-    float x = -_angleCoef * ( -_sideslipAngleFPM_deg * cosRoll + _angleOfAttackFPM_deg * sinRoll );
+    double x = -_angleCoef * ( -_sideslipAngleFPM_deg * cosRoll + _angleOfAttackFPM_deg * sinRoll );
 
     _patPitchLadderSlip->setPosition( osg::Vec3( x, 0.0, 0.0 ) );
 
@@ -1100,7 +1101,7 @@ void HUD::updatePitchLadder()
     if ( i_pitch <  0 ) i_pitch =  0;
     if ( i_pitch > 36 ) i_pitch = 36;
 
-    float pitch_i_deg = i_pitch * 5.0f - 90.0f;
+    double pitch_i_deg = i_pitch * 5.0 - 90.0;
 
     _switchPitchLadder->setAllChildrenOff();
     _switchPitchLadder->setValue( i_pitch, true );
@@ -1108,16 +1109,16 @@ void HUD::updatePitchLadder()
     if ( i_pitch >  0 ) _switchPitchLadder->setValue( i_pitch - 1, true );
     if ( i_pitch < 36 ) _switchPitchLadder->setValue( i_pitch + 1, true );
 
-    float roll_deg_abs = fabs( roll_deg );
+    double roll_deg_abs = fabs( roll_deg );
 
     if ( roll_deg_abs < 30.0 || roll_deg_abs > 150.0 )
     {
-        if ( i_pitch >  1 && pitch_deg - pitch_i_deg <  1.0f )
+        if ( i_pitch >  1 && pitch_deg - pitch_i_deg <  1.0 )
         {
             _switchPitchLadder->setValue( i_pitch - 2, true );
         }
 
-        if ( i_pitch < 35 && pitch_deg - pitch_i_deg > -1.0f )
+        if ( i_pitch < 35 && pitch_deg - pitch_i_deg > -1.0 )
         {
             _switchPitchLadder->setValue( i_pitch + 2, true );
         }
@@ -1130,9 +1131,9 @@ void HUD::updateHeadingScale()
 {
     osg::ref_ptr<osgText::Text> text;
 
-    float head_deg = osg::RadiansToDegrees( Data::get()->cgi.hud.heading );
+    double head_deg = osg::RadiansToDegrees( Data::get()->cgi.hud.heading );
 
-    short head_ind = floor( ( ( ( head_deg < 180.0f ) ? 360.0f : 0.0f ) + head_deg ) / 5.0 + 0.5 );
+    short head_ind = floor( ( ( ( head_deg < 180.0 ) ? 360.0 : 0.0 ) + head_deg ) / 5.0 + 0.5 );
     if ( head_ind <   0 ) head_ind =   0;
     if ( head_ind > 128 ) head_ind = 128;
 
@@ -1146,16 +1147,16 @@ void HUD::updateHeadingScale()
     _switchHeadingScale->setValue( head_ind - 4, true );
     _switchHeadingScale->setValue( head_ind + 4, true );
 
-    float x = ( 100.0f / 50.0f ) * ( ( head_deg < 180.0f ) ? head_deg : head_deg - 360.0f );
+    double x = ( 100.0 / 50.0 ) * ( ( head_deg < 180.0 ) ? head_deg : head_deg - 360.0 );
     _patHeadingScale->setPosition( osg::Vec3( -x, 0.0, 0.0 ) );
 
     text = dynamic_cast< osgText::Text* >( _heading->getDrawable( 0 ) );
 
     if ( text.valid() )
     {
-        char heading_str[256];
-        sprintf( heading_str, "%d", (int)( floor( head_deg + 0.5 ) ) );
-        text->setText( heading_str );
+        std::stringstream heading_str;
+        heading_str << (int)( floor( head_deg + 0.5 ) );
+        text->setText( heading_str.str() );
     }
 }
 
@@ -1195,13 +1196,13 @@ void HUD::updateILS()
         _patILS->setAttitude( q );
         _patILS->setPosition( r );
 
-        float ils_gs = Data::get()->cgi.hud.ils_gs_deviation;
-        float ils_lc = Data::get()->cgi.hud.ils_lc_deviation;
+        double ils_gs = Data::get()->cgi.hud.ils_gs_deviation;
+        double ils_lc = Data::get()->cgi.hud.ils_lc_deviation;
 
-        if ( ils_gs < -1.0f ) ils_gs = -1.0f;
-        if ( ils_gs >  1.0f ) ils_gs =  1.0f;
-        if ( ils_lc < -1.0f ) ils_lc = -1.0f;
-        if ( ils_lc >  1.0f ) ils_lc =  1.0f;
+        if ( ils_gs < -1.0 ) ils_gs = -1.0;
+        if ( ils_gs >  1.0 ) ils_gs =  1.0;
+        if ( ils_lc < -1.0 ) ils_lc = -1.0;
+        if ( ils_lc >  1.0 ) ils_lc =  1.0;
 
         _patILS_GS->setPosition( osg::Vec3( 0.0, 20.0 * ils_gs, 0.0 ) );
         _patILS_LC->setPosition( osg::Vec3( 20.0 * ils_lc, 0.0, 0.0 ) );
@@ -1237,11 +1238,11 @@ void HUD::updateTextL()
 
     if ( text.valid() )
     {
-        float airspeed = Data::get()->cgi.hud.airspeed * Data::get()->cgi.hud.factor_vel;
+        double airspeed = Data::get()->cgi.hud.airspeed * Data::get()->cgi.hud.factor_vel;
 
-        char airspeed_str[256];
-        sprintf( airspeed_str, "%d", (int)( floor( airspeed + 0.5 ) ) );
-        text->setText( airspeed_str );
+        std::stringstream airspeed_str;
+        airspeed_str << (int)( floor( airspeed + 0.5 ) );
+        text->setText( airspeed_str.str() );
     }
 
     // Mach no
@@ -1249,9 +1250,13 @@ void HUD::updateTextL()
 
     if ( text.valid() )
     {
-        char machNo_str[256];
-        sprintf( machNo_str, "M %.2f", Data::get()->cgi.hud.machNumber );
-        text->setText( machNo_str );
+        std::stringstream machNo_str;
+
+        machNo_str.setf( std::ios_base::showpoint );
+        machNo_str.setf( std::ios_base::fixed );
+
+        machNo_str << "M " << std::setprecision( 2 ) << Data::get()->cgi.hud.machNumber;
+        text->setText( machNo_str.str() );
     }
 
     // G-Force
@@ -1259,9 +1264,13 @@ void HUD::updateTextL()
 
     if ( text.valid() )
     {
-        char gForce_str[256];
-        sprintf( gForce_str, "%.1fG", Data::get()->cgi.hud.g_force );
-        text->setText( gForce_str );
+        std::stringstream gForce_str;
+
+        gForce_str.setf( std::ios_base::showpoint );
+        gForce_str.setf( std::ios_base::fixed );
+
+        gForce_str << std::setprecision( 1 ) << Data::get()->cgi.hud.g_force << "G";
+        text->setText( gForce_str.str() );
     }
 }
 
@@ -1276,11 +1285,11 @@ void HUD::updateTextR()
 
     if ( text.valid() )
     {
-        float altitude = Data::get()->cgi.hud.altitude * Data::get()->cgi.hud.factor_alt;
+        double altitude = Data::get()->cgi.hud.altitude * Data::get()->cgi.hud.factor_alt;
 
-        char altitude_str[256];
-        sprintf( altitude_str, "%d", (int)( floor( altitude + 0.5 ) ) );
-        text->setText( altitude_str );
+        std::stringstream altitude_str;
+        altitude_str << (int)( floor( altitude + 0.5 ) );
+        text->setText( altitude_str.str() );
     }
 
     // climb rate
@@ -1288,11 +1297,11 @@ void HUD::updateTextR()
 
     if ( text.valid() )
     {
-        float climbRate = 60.0f * Data::get()->cgi.hud.climbRate * Data::get()->cgi.hud.factor_alt;
+        double climbRate = 60.0 * Data::get()->cgi.hud.climbRate * Data::get()->cgi.hud.factor_alt;
 
-        char climbRate_str[256];
-        sprintf( climbRate_str, "%d", (int)( floor( climbRate + 0.5 ) ) );
-        text->setText( climbRate_str );
+        std::stringstream climbRate_str;
+        climbRate_str << (int)( floor( climbRate + 0.5 ) );
+        text->setText( climbRate_str.str() );
     }
 
     // radio altitude
@@ -1300,13 +1309,13 @@ void HUD::updateTextR()
 
     if ( text.valid() )
     {
-        float altitude = Data::get()->cgi.hud.radioAlt * Data::get()->cgi.hud.factor_alt;
+        double altitude = Data::get()->cgi.hud.radioAlt * Data::get()->cgi.hud.factor_alt;
 
         if ( altitude < 3000.0 )
         {
-            char altitude_str[256];
-            sprintf( altitude_str, "RA %d", (int)( floor( altitude + 0.5 ) ) );
-            text->setText( altitude_str );
+            std::stringstream altitude_str;
+            altitude_str << "RA " << (int)( floor( altitude + 0.5 ) );
+            text->setText( altitude_str.str() );
         }
         else
         {

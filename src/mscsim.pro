@@ -13,7 +13,7 @@ TARGET = mscsim
 
 ################################################################################
 
-CONFIG += c++11
+CONFIG += c++17
 
 ################################################################################
 
@@ -56,6 +56,8 @@ win32: DEFINES += \
 win32: CONFIG(release, debug|release): DEFINES += NDEBUG
 win32: CONFIG(debug, debug|release):   DEFINES += _DEBUG
 
+unix: CONFIG(debug, debug|release):   DEFINES += _DEBUG
+
 #CONFIG(release, debug|release): DEFINES += QT_NO_DEBUG_OUTPUT
 #DEFINES += QT_NO_DEBUG_OUTPUT
 
@@ -66,6 +68,7 @@ unix: DEFINES += _LINUX_
 INCLUDEPATH += ./
 
 win32: INCLUDEPATH += \
+    $(ALUT_DIR)/include \
     $(OPENAL_DIR)/include \
     $(OSG_ROOT)/include/ \
     $(OSG_ROOT)/include/libxml2
@@ -76,13 +79,16 @@ unix: INCLUDEPATH += \
 ################################################################################
 
 win32: LIBS += \
+    -L$(ALUT_DIR)/lib \
     -L$(OPENAL_DIR)/libs/Win64 \
     -L$(OSG_ROOT)/lib \
     -lalut \
+    -lgdal_i \
     -llibxml2 \
     -lopenal32 \
     -lopengl32 \
-    -lwinmm
+    -lwinmm \
+    -lws2_32
 
 win32: CONFIG(release, debug|release): LIBS += \
     -lOpenThreads \
@@ -110,12 +116,14 @@ win32: CONFIG(debug, debug|release): LIBS += \
 
 unix: LIBS += \
     -L/lib \
-    -L/usr/lib \
     -lalut \
+    -lgdal \
     -lopenal \
     -lX11 \
     -lXss \
-    -lxml2 \
+    -lxml2
+
+unix: LIBS += \
     -lOpenThreads \
     -losg \
     -losgDB \
@@ -130,9 +138,9 @@ unix: LIBS += \
 ################################################################################
 
 HEADERS += \
+    $$PWD/defs.h \
     $$PWD/Autopilot.h \
     $$PWD/Data.h \
-    $$PWD/Defines.h \
     $$PWD/Manager.h \
     $$PWD/Simulation.h
 

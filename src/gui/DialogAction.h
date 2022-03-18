@@ -28,7 +28,7 @@
 
 #include <hid/hid_Manager.h>
 
-#include <Defines.h>
+#include <defs.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -64,7 +64,7 @@ public:
 
     explicit DialogAction( QWidget *parent = NULLPTR, short joystickId = -1 );
 
-    ~DialogAction();
+    virtual ~DialogAction();
 
 protected:
 

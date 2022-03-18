@@ -27,7 +27,7 @@
 #include <QWidget>
 
 #include <Autopilot.h>
-#include <Defines.h>
+#include <defs.h>
 
 #include <g1000/cgi/g1000_PFD.h>
 
@@ -49,7 +49,7 @@ public:
 
     explicit WidgetPFD( QWidget *parent = NULLPTR );
 
-    ~WidgetPFD();
+    virtual ~WidgetPFD();
 
     void init( Autopilot *ap, g1000::IFD *ifd );
 

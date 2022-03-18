@@ -27,7 +27,7 @@
 #include <QGraphicsView>
 #include <QGraphicsSvgItem>
 
-#include <Defines.h>
+#include <defs.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -40,8 +40,13 @@ class GraphicsEHSI : public QGraphicsView
 
 public:
 
-    /** CDI indicator. */
-    enum CDI { NONE = 0, TO, FROM };
+    /** Course Deviation Indicator (CDI). */
+    enum class CDI
+    {
+        Off = 0,
+        TO,
+        FROM
+    };
 
     /** @brief Constructor. */
     explicit GraphicsEHSI( QWidget *parent = NULLPTR );
@@ -53,22 +58,22 @@ public:
     void reinit();
 
     /** @param heading [deg] */
-    void setHeading( float heading );
+    void setHeading( double heading );
 
     /** @param course [deg] */
-    void setCourse( float course );
+    void setCourse( double course );
 
     /** @param bearing [deg] */
-    void setBearing( float bearing, bool visible = false );
+    void setBearing( double bearing, bool visible = false );
 
     /** @param deviation [-] */
-    void setDeviation( float deviation, CDI cdi = NONE );
+    void setDeviation( double deviation, CDI cdi = CDI::Off );
 
     /** @param distance [nm] */
-    void setDistance( float distance, bool visible = false );
+    void setDistance( double distance, bool visible = false );
 
     /** @param heading [deg] */
-    void setHeadingSel( float heading );
+    void setHeadingSel( double heading );
 
 protected:
 
@@ -86,7 +91,7 @@ private:
 
     QGraphicsSvgItem *_itemBack;        ///< NAV background
     QGraphicsSvgItem *_itemMask;        ///< NAV mask
-    QGraphicsSvgItem *_itemMark;
+    QGraphicsSvgItem *_itemMark;        ///<
 
     QGraphicsSvgItem *_itemBrgArrow;    ///<
     QGraphicsSvgItem *_itemCrsArrow;    ///<
@@ -101,28 +106,28 @@ private:
     QGraphicsTextItem *_itemHdgText;    ///<
     QGraphicsTextItem *_itemDmeText;    ///<
 
-    float _heading;                     ///< [deg]
-    float _course;                      ///<
-    float _bearing;                     ///<
-    float _deviation;                   ///<
-    float _distance;                    ///<
+    double _heading;                    ///< [deg]
+    double _course;                     ///<
+    double _bearing;                    ///<
+    double _deviation;                  ///<
+    double _distance;                   ///<
 
-    float _heading_sel;                 ///< [deg]
+    double _heading_sel;                ///< [deg]
 
     CDI _cdi;                           ///<
 
     bool _bearingVisible;               ///<
     bool _distanceVisible;              ///<
 
-    float _devBarDeltaX_new;            ///<
-    float _devBarDeltaX_old;            ///<
-    float _devBarDeltaY_new;            ///<
-    float _devBarDeltaY_old;            ///<
+    double _devBarDeltaX_new;           ///<
+    double _devBarDeltaX_old;           ///<
+    double _devBarDeltaY_new;           ///<
+    double _devBarDeltaY_old;           ///<
 
-    float _scaleX;                      ///<
-    float _scaleY;                      ///<
+    double _scaleX;                     ///<
+    double _scaleY;                     ///<
 
-    float _originalPixPerDev;           ///<
+    double _originalPixPerDev;          ///<
 
     QPointF _originalNavCtr;            ///<
 

@@ -29,7 +29,7 @@
 #include <osg/Node>
 
 #include <Autopilot.h>
-#include <Defines.h>
+#include <defs.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -49,7 +49,7 @@ public:
 
     explicit WidgetGDU( QWidget *parent = NULLPTR );
 
-    ~WidgetGDU();
+    virtual ~WidgetGDU();
 
     void update();
 

@@ -129,10 +129,10 @@ void Manager::init()
     qRegisterMetaType< Data::DataBuf >( "Data::DataBuf" );
     qRegisterMetaType< fdm::DataOut  >( "fdm::DataOut"  );
 
-    connect( this, SIGNAL(dataInpUpdated(const Data::DataBuf*)), _sim, SLOT(onDataInpUpdated(const Data::DataBuf*)) );
-    connect( this, SIGNAL(dataInpUpdated(const Data::DataBuf*)), _sfx, SLOT(onDataInpUpdated(const Data::DataBuf*)) );
+    connect( this, SIGNAL(dataInpUpdated(const Data::DataBuf*)), _sim, SLOT(onDataInpUpdated(const Data::DataBuf*)), Qt::QueuedConnection );
+    connect( this, SIGNAL(dataInpUpdated(const Data::DataBuf*)), _sfx, SLOT(onDataInpUpdated(const Data::DataBuf*)), Qt::QueuedConnection );
 
-    connect( _sim, SIGNAL(dataOutUpdated(const fdm::DataOut&)), this, SLOT(onDataOutUpdated(const fdm::DataOut&)) );
+    connect( _sim, SIGNAL(dataOutUpdated(const fdm::DataOut&)), this, SLOT(onDataOutUpdated(const fdm::DataOut&)), Qt::QueuedConnection );
 
     hid::Manager::instance()->init();
 
@@ -408,7 +408,7 @@ void Manager::onDataOutUpdated( const fdm::DataOut &dataOut )
 
             while ( Data::get()->ownship.propeller[ i ] > 2.0f * M_PI )
             {
-                Data::get()->ownship.propeller[ i ] -= (float)( 2.0f * M_PI );
+                Data::get()->ownship.propeller[ i ] -= 2.0 * M_PI;
             }
 
             Data::get()->ownship.afterburner[ i ] =

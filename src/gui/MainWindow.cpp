@@ -135,13 +135,13 @@ MainWindow::MainWindow( QWidget *parent ) :
     _dockMap  = new DockWidgetMap  ( this );
     _dockProp = new DockWidgetProp ( this );
 
-    _dockAuto->setObjectName ( "DockAuto" );
-    _dockCtrl->setObjectName ( "DockCtrl" );
-    _dockData->setObjectName ( "DockData" );
-    _dockEFIS->setObjectName ( "DockEFIS" );
-    _dockMain->setObjectName ( "DockMain" );
-    _dockMap->setObjectName  ( "DockMap"  );
-    _dockProp->setObjectName ( "DockProp" );
+    _dockAuto ->setObjectName( "DockAuto" );
+    _dockCtrl ->setObjectName( "DockCtrl" );
+    _dockData ->setObjectName( "DockData" );
+    _dockEFIS ->setObjectName( "DockEFIS" );
+    _dockMain ->setObjectName( "DockMain" );
+    _dockMap  ->setObjectName( "DockMap"  );
+    _dockProp ->setObjectName( "DockProp" );
 
     addDockWidget( Qt::TopDockWidgetArea    , _dockAuto );
     addDockWidget( Qt::BottomDockWidgetArea , _dockCtrl );
@@ -159,9 +159,9 @@ MainWindow::MainWindow( QWidget *parent ) :
     _dockMap  ->setVisible( false );
     _dockProp ->setVisible( false );
 
-    _scCycleViews = new QShortcut( QKeySequence(Qt::CTRL + Qt::Key_V)     , this, SLOT(shorcutCycleViews_activated())   );
-    _scToggleHud  = new QShortcut( QKeySequence(Qt::CTRL + Qt::Key_H)     , this, SLOT(shorcutToggleHud_activated())    );
-    _scFullScreen = new QShortcut( QKeySequence(Qt::CTRL + Qt::Key_F)     , this, SLOT(shorcutFullScreen_activated())   );
+    _scCycleViews = new QShortcut( QKeySequence(Qt::CTRL + Qt::Key_V)     , this, SLOT(shortcutCycleViews_activated ()) );
+    _scToggleHud  = new QShortcut( QKeySequence(Qt::CTRL + Qt::Key_H)     , this, SLOT(shortcutToggleHud_activated  ()) );
+    _scFullScreen = new QShortcut( QKeySequence(Qt::CTRL + Qt::Key_F)     , this, SLOT(shortcutFullScreen_activated ()) );
     _scTimeFaster = new QShortcut( QKeySequence(Qt::CTRL + Qt::Key_Equal) , this, SLOT(on_actionTimeFaster_triggered()) );
     _scTimeSlower = new QShortcut( QKeySequence(Qt::CTRL + Qt::Key_Minus) , this, SLOT(on_actionTimeSlower_triggered()) );
     _scTimeNormal = new QShortcut( QKeySequence(Qt::CTRL + Qt::Key_0)     , this, SLOT(on_actionTimeNormal_triggered()) );
@@ -212,6 +212,7 @@ MainWindow::~MainWindow()
     DELPTR( _scFullScreen );
     DELPTR( _scTimeFaster );
     DELPTR( _scTimeSlower );
+    DELPTR( _scTimeNormal );
 
     DELPTR( _ui );
 }
@@ -862,10 +863,10 @@ void MainWindow::updateDockEFIS()
 
         _dockEFIS->setCourse( _dockAuto->getCourse() );
 
-        GraphicsEHSI::CDI cdi = GraphicsEHSI::NONE;
+        GraphicsEHSI::CDI cdi = GraphicsEHSI::CDI::Off;
 
-        if ( Data::get()->navigation.nav_cdi == Data::Navigation::TO   ) cdi = GraphicsEHSI::TO;
-        if ( Data::get()->navigation.nav_cdi == Data::Navigation::FROM ) cdi = GraphicsEHSI::FROM;
+        if ( Data::get()->navigation.nav_cdi == Data::Navigation::TO   ) cdi = GraphicsEHSI::CDI::TO;
+        if ( Data::get()->navigation.nav_cdi == Data::Navigation::FROM ) cdi = GraphicsEHSI::CDI::FROM;
 
         _dockEFIS->setDistance( fdm::Units::m2nmi( Data::get()->navigation.dme_distance ),
                                 Data::get()->navigation.dme_visible );
@@ -873,28 +874,28 @@ void MainWindow::updateDockEFIS()
                                Data::get()->navigation.adf_visible );
         _dockEFIS->setDeviation( Data::get()->navigation.nav_norm, cdi );
 
-        GraphicsEADI::FlightMode flightMode = GraphicsEADI::FM_OFF;
+        GraphicsEADI::FltMode fltMode = GraphicsEADI::FltMode::Off;
         if ( _ap->isActiveFD() )
         {
-            flightMode = GraphicsEADI::FM_FD;
+            fltMode = GraphicsEADI::FltMode::FD;
 
-            if ( _ap->isActiveAP() ) flightMode = GraphicsEADI::FM_CMD;
+            if ( _ap->isActiveAP() ) fltMode = GraphicsEADI::FltMode::CMD;
         }
-        _dockEFIS->setFlightMode( flightMode );
+        _dockEFIS->setFltMode( fltMode );
 
-        GraphicsEADI::LNAV lnav = GraphicsEADI::LNAV_OFF;
-        if      ( _ap->isActiveHDG() ) lnav = GraphicsEADI::LNAV_HDG;
-        else if ( _ap->isActiveNAV() ) lnav = GraphicsEADI::LNAV_NAV;
-        else if ( _ap->isActiveAPR() ) lnav = GraphicsEADI::LNAV_APR;
-        else if ( _ap->isActiveBC()  ) lnav = GraphicsEADI::LNAV_BC;
+        GraphicsEADI::LNAV lnav = GraphicsEADI::LNAV::Off;
+        if      ( _ap->isActiveHDG() ) lnav = GraphicsEADI::LNAV::HDG;
+        else if ( _ap->isActiveNAV() ) lnav = GraphicsEADI::LNAV::NAV;
+        else if ( _ap->isActiveAPR() ) lnav = GraphicsEADI::LNAV::APR;
+        else if ( _ap->isActiveBC()  ) lnav = GraphicsEADI::LNAV::BC;
         _dockEFIS->setLNAV( lnav );
 
-        GraphicsEADI::VNAV vnav = GraphicsEADI::VNAV_OFF;
-        if      ( _ap->isActiveALT() ) vnav = GraphicsEADI::VNAV_ALT;
-        else if ( _ap->isActiveIAS() ) vnav = GraphicsEADI::VNAV_IAS;
-        else if ( _ap->isActiveVS()  ) vnav = GraphicsEADI::VNAV_VS;
-        else if ( _ap->isActiveARM() ) vnav = GraphicsEADI::VNAV_ALT_SEL;
-        else if ( _ap->isActiveGS()  ) vnav = GraphicsEADI::VNAV_GS;
+        GraphicsEADI::VNAV vnav = GraphicsEADI::VNAV::Off;
+        if      ( _ap->isActiveALT() ) vnav = GraphicsEADI::VNAV::ALT;
+        else if ( _ap->isActiveIAS() ) vnav = GraphicsEADI::VNAV::IAS;
+        else if ( _ap->isActiveVS()  ) vnav = GraphicsEADI::VNAV::VS;
+        else if ( _ap->isActiveARM() ) vnav = GraphicsEADI::VNAV::ALT_SEL;
+        else if ( _ap->isActiveGS()  ) vnav = GraphicsEADI::VNAV::GS;
         _dockEFIS->setVNAV( vnav );
 
         _dockEFIS->setAirspeedSel( coef_ias * _ap->getAirspeed() );
@@ -1527,7 +1528,7 @@ void MainWindow::on_actionAbout_triggered()
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void MainWindow::shorcutCycleViews_activated()
+void MainWindow::shortcutCycleViews_activated()
 {
     ViewType viewType = Data::CGI::ViewChase;
 
@@ -1547,7 +1548,7 @@ void MainWindow::shorcutCycleViews_activated()
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void MainWindow::shorcutToggleHud_activated()
+void MainWindow::shortcutToggleHud_activated()
 {
     _showHUD = !_showHUD;
     _ui->actionShowHUD->setChecked( _showHUD );
@@ -1555,7 +1556,7 @@ void MainWindow::shorcutToggleHud_activated()
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void MainWindow::shorcutFullScreen_activated()
+void MainWindow::shortcutFullScreen_activated()
 {
     if ( isFullScreen() )
     {

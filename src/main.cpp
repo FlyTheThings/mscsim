@@ -42,10 +42,6 @@ int main( int argc, char *argv[] )
 {
     setlocale( LC_ALL, "C" );
 
-#   ifdef _LINUX_
-    setenv( "LC_NUMERIC", "en_US", 1 );
-#   endif
-
 #   ifndef SIM_TEST
 
 #   ifdef _LINUX_
@@ -70,6 +66,8 @@ int main( int argc, char *argv[] )
     Log::out() << __DATE__ << " ";
     Log::out() << __TIME__ << std::endl;
 
+    QLocale::setDefault( QLocale::system() );
+
     QApplication *app = new QApplication( argc, argv );
 
     app->setApplicationName    ( SIM_APP_NAME   );
@@ -83,8 +81,8 @@ int main( int argc, char *argv[] )
 
     int result = app->exec();
 
-    delete mgr; mgr = NULLPTR;
-    delete app; app = NULLPTR;
+    if ( mgr ) { delete mgr; } mgr = NULLPTR;
+    if ( app ) { delete app; } app = NULLPTR;
 
 #   ifndef SIM_TEST
     std::cerr.rdbuf( strbuf );
